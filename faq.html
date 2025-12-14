@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - QubeNode</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html {
+            background: #000000;
+            background-color: #000000 !important;
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #000000;
+            color: #ffffff;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Animated background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: radial-gradient(ellipse at 50% 50%, rgba(0, 212, 255, 0.15) 0%, transparent 50%),
+                        radial-gradient(ellipse at 80% 20%, rgba(0, 255, 240, 0.15) 0%, transparent 50%),
+                        radial-gradient(ellipse at 20% 80%, rgba(0, 128, 255, 0.15) 0%, transparent 50%);
+            animation: bgShift 20s ease infinite;
+            pointer-events: none;
+        }
+
+        @keyframes bgShift {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(5deg); }
+        }
+
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .container { 
+            position: relative;
+            z-index: 2;
+            max-width: 900px; 
+            margin: 0 auto; 
+            padding: 20px; 
+        }
+        header { text-align: center; padding: 20px 0; }
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: rgba(0, 212, 255, 0.15);
+            border: 1px solid rgba(0, 212, 255, 0.4);
+            border-radius: 12px;
+            color: #00D4FF;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s;
+            margin-bottom: 40px;
+        }
+        .back-button:hover {
+            background: rgba(0, 212, 255, 0.25);
+            transform: translateX(-5px);
+        }
+        .page-title { 
+            color: #22d3ee; /* Менш яскравий відтінок */
+            font-size: 2.8em; 
+            font-weight: 700; 
+            margin: 20px 0;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.2); /* Менш інтенсивна тінь */
+        }
+        .section { 
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.7) 0%, rgba(10, 15, 30, 0.8) 100%);
+            border: 1px solid rgba(0, 212, 255, 0.25); 
+            border-radius: 25px; 
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+        .intro { 
+            font-size: 1.2em; 
+            margin-bottom: 40px; 
+            color: #94a3b8;
+            text-align: center;
+        }
+        .faq-item { 
+            margin-bottom: 18px; 
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.08) 0%, rgba(0, 212, 255, 0.03) 100%);
+            border: 1px solid rgba(0, 212, 255, 0.2); 
+            border-radius: 15px; 
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .faq-item:hover {
+            border-color: rgba(0, 212, 255, 0.4);
+            transform: translateX(5px);
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.15);
+        }
+        .faq-question { 
+            width: 100%; 
+            padding: 22px 25px; 
+            background: transparent; 
+            border: none; 
+            color: #22d3ee; /* Менш яскравий cyan-400 */
+            font-size: 1.15em; 
+            font-weight: 600; 
+            cursor: pointer; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            text-align: left; 
+            transition: all 0.3s;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .faq-question:hover { 
+            background: rgba(0, 212, 255, 0.12);
+            padding-left: 30px;
+        }
+        .faq-question.active {
+            background: rgba(0, 212, 255, 0.15);
+            border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+        }
+        .faq-icon { 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.9em;
+            color: #00D4FF;
+        }
+        .faq-question.active .faq-icon { 
+            transform: rotate(180deg);
+            color: #22d3ee;
+        }
+        .faq-answer { 
+            max-height: 0; 
+            overflow: hidden; 
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.4s;
+            padding: 0 25px; 
+        }
+        .faq-answer.active { 
+            max-height: 1500px; 
+            padding: 5px 25px 25px 25px;
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .faq-answer p { 
+            color: #cbd5e1; 
+            line-height: 1.9; 
+            margin-bottom: 15px;
+            font-size: 1.05em;
+        }
+        .faq-answer ul { 
+            color: #cbd5e1; 
+            margin-left: 25px; 
+            line-height: 2.2;
+            font-size: 1.05em;
+        }
+        .faq-answer ul li {
+            margin-bottom: 8px;
+        }
+        .faq-answer strong { 
+            color: #00FFF0;
+            font-weight: 600;
+        }
+        .faq-answer a { 
+            color: #00D4FF; 
+            text-decoration: none; 
+            border-bottom: 1px dashed #00D4FF;
+            transition: all 0.3s;
+            padding-bottom: 2px;
+        }
+        .faq-answer a:hover {
+            color: #00FFF0;
+            border-bottom-color: #00FFF0;
+        }
+        .footer-links { 
+            display: flex; 
+            gap: 20px; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            margin-top: 50px; 
+        }
+        .footer-link { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 12px; 
+            padding: 20px 45px; 
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.15) 0%, rgba(0, 212, 255, 0.08) 100%);
+            border: 2px solid rgba(0, 212, 255, 0.35); 
+            border-radius: 50px; 
+            color: #00FFF0; 
+            text-decoration: none; 
+            font-weight: 600; 
+            font-size: 1.15em; 
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.2);
+        }
+        .footer-link:hover { 
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.25) 0%, rgba(0, 212, 255, 0.15) 100%);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+            border-color: rgba(0, 212, 255, 0.5);
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 50px 20px 30px 20px;
+            color: #64748b;
+            border-top: 1px solid rgba(0, 212, 255, 0.1);
+            margin-top: 60px;
+        }
+        footer p {
+            margin: 8px 0;
+        }
+        footer strong {
+            color: #00FFF0;
+        }
+        footer a {
+            color: #00D4FF;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        footer a:hover {
+            color: #00FFF0;
+        }
+        
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .page-title { font-size: 2em; }
+            .section { padding: 25px 20px; }
+            .faq-question { font-size: 1.05em; padding: 18px 20px; }
+            .faq-answer.active { padding: 5px 20px 20px 20px; }
+            
+            /* Кнопки внизу паралельно на мобільному */
+            .footer-links { 
+                flex-wrap: nowrap !important; /* Не переносити на новий рядок */
+                gap: 10px;
+            }
+            .footer-link { 
+                padding: 14px 20px; 
+                font-size: 0.95em;
+                flex: 1; /* Рівна ширина */
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated background -->
+    <div class="bg-animation"></div>
+    <div class="grid-overlay"></div>
+    
+    <div class="container">
+        <header>
+            <a href="index.html" class="back-button">🏠 To Main</a>
+            <h1 class="page-title">❓ Frequently Asked Questions (FAQ)</h1>
+            <p style="color: #94a3b8; font-size: 1.1em;">Find answers to the most common questions</p>
+        </header>
+
+        <div class="section">
+            
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <span>❓ What is staking and how does it work?</span>
+                    <span class="faq-icon">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Staking is the process of locking your $TICS coins to support the operation of the Qubetics network. When you delegate coins to a validator, you help ensure blockchain security and receive rewards for this. Your coins remain in your wallet but participate in network consensus.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <span>❓ When will I start receiving rewards?</span>
+                    <span class="faq-icon">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Rewards are credited <strong>automatically after each block is created</strong>. First accruals can be seen within a few seconds after delegation. You can view your rewards in real time through your wallet or Qubetics network explorer.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <span>❓ Can I withdraw my coins at any time?</span>
+                    <span class="faq-icon">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Yes, you can <strong>unbond (undelegate)</strong> coins at any time. After unbond, there is a waiting period <strong>(unbonding period) of 14 days</strong>, after which coins will return to your wallet according to Qubetics network rules. During the unbonding period, coins do not generate rewards.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <span>❓ Is there a minimum amount for delegation?</span>
+                    <span class="faq-icon">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>There is no minimum amount for delegation.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <span>❓ Is it safe to delegate coins?</span>
+                    <span class="faq-icon">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p><strong>Yes, it is absolutely safe!</strong> When delegating, your coins <strong>remain in your wallet</strong>. You do not transfer coins to the validator, but only delegate the right to use them for block validation. Only you have access to your private keys and can manage your funds.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <span>❓ What is QubeNode validator commission?</span>
+                    <span class="faq-icon">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>QubeNode validator commission is <strong>5%</strong> of network rewards. This is the lowest possible network commission. It is automatically deducted from accrued rewards, so you receive net rewards.</p>
+                    <p><strong>Calculation example:</strong></p>
+                    <p>You delegated <strong>1000 coins</strong>. Network reward (APY) is <strong>30%</strong> annual, so per year total network reward will be <strong>300 coins</strong>. From this we deduct 5% validator commission:</p>
+                    <p style="color: #00FFF0; font-weight: 600;">300 coins - 5% commission = your net reward <strong>285 coins (28.5%)</strong> and validator reward <strong>15 coins (1.5%)</strong></p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <span>❓ What is APY (annual yield)?</span>
+                    <span class="faq-icon">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>APY is <strong>30%</strong> annually. However, it is worth noting that APY is a dynamic indicator and may change depending on various factors, including the total amount of staked coins in the network.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <span>❓ What risks exist in staking/delegation?</span>
+                    <span class="faq-icon">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>Main risks are related to validator operation:</p>
+                    <ul>
+                        <li><strong>Downtime:</strong> If validator misses more than 50% of the last 100,000 blocks, a penalty of <strong>1%</strong> will be applied. For example, to miss 50,000 blocks, validator must be down for approximately <strong>79 hours (more than 3 days)</strong>.</li>
+                    </ul>
+                    <p style="margin-top: 15px;"><strong>QubeNode ensures your security:</strong> Powerful QubeNode validator infrastructure ensures stable and reliable operation. We use multi-level monitoring to minimize any downtime risks.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <span>❓ Which wallets support Qubetics staking?</span>
+                    <span class="faq-icon">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>For Qubetics staking you can use:</p>
+                    <ul>
+                        <li><strong>Keplr Wallet</strong> — popular wallet for Cosmos ecosystem</li>
+                        <li><strong>Cosmostation Wallet</strong> — convenient mobile and web wallet</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <span>❓ Where can I buy $TICS coins?</span>
+                    <span class="faq-icon">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>$TICS coins are available on the following centralized exchanges:</p>
+                    <ul>
+                        <li><strong><a href="https://www.mexc.com/uk-UA/exchange/TICS_USDT?_from=search_spot_trade" target="_blank">MEXC</a></strong></li>
+                        <li><strong><a href="https://www.lbank.com/uk/trade/tics_usdt" target="_blank">LBank</a></strong></li>
+                        <li><strong><a href="https://www.coinstore.com/spot/TICSUSDT?ts=1760907955300" target="_blank">Coinstore</a></strong></li>
+                    </ul>
+                    <p>You can also purchase coins through bridges:</p>
+                    <ul>
+                        <li><strong><a href="https://dapp.bridgers.xyz/?ref=qubetics.com#/?sourceFlag=widget-acb" target="_blank">SWFT Blockchain</a></strong> — fast bridge for cryptocurrency exchange</li>
+                        <li><strong><a href="https://qube.blazpay.com/bridge" target="_blank">BlazPay</a></strong> — convenient bridge for Qubetics</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <button class="faq-question" onclick="toggleFaq(this)">
+                    <span>❓ How to contact QubeNode support?</span>
+                    <span class="faq-icon">▼</span>
+                </button>
+                <div class="faq-answer">
+                    <p>You can contact us through:</p>
+                    <ul>
+                        <li><strong><a href="https://t.me/+sRnz7RyoL4Q0MWEy" target="_blank">Telegram</a>:</strong> Our support team is always ready to help</li>
+                        <li><strong>Email:</strong> <a href="mailto:validator.qubenode@gmail.com">validator.qubenode@gmail.com</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-links">
+            <a href="how-to-delegate.html" class="footer-link">
+                <span>💎</span>
+                <span>Start Staking</span>
+            </a>
+            <a href="https://t.me/+sRnz7RyoL4Q0MWEy" class="footer-link" target="_blank">
+                <span>💬</span>
+                <span>Support</span>
+            </a>
+        </div>
+        
+        <footer>
+            <p><strong>QubeNode</strong> - Professional Qubetics Network validator</p>
+            <p>© 2025 QubeNode. All rights reserved. | <a href="https://t.me/+sRnz7RyoL4Q0MWEy" target="_blank">Telegram</a></p>
+        </footer>
+    </div>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script>
+        function toggleFaq(button) {
+            const answer = button.nextElementSibling;
+            const isActive = button.classList.contains('active');
+            
+            // Close all other answers
+            document.querySelectorAll('.faq-question').forEach(q => {
+                q.classList.remove('active');
+                q.nextElementSibling.classList.remove('active');
+            });
+            
+            // Toggle current answer
+            if (!isActive) {
+                button.classList.add('active');
+                answer.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>
